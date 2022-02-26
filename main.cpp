@@ -66,8 +66,10 @@ struct CheckPointer                                //4
     T* compare(T* a, T* b) //5
     {
         if ( ( a != nullptr ) && ( b != nullptr) )
+        {
             if( a->value < b->value ) return a;
             if( a->value > b->value ) return b;
+        }
         return nullptr;
     }
 };
@@ -152,15 +154,15 @@ int main()
     
     CheckPointer f;                                           //7
     
-    auto* smaller = f.compare( &tInst1, &tInst2);                    if(smaller == nullptr) //8
-    {
-        std::cout << "The pointer in null! " << std::endl;
-    }
-    else
+    auto* smaller = f.compare( &tInst1, &tInst2); 
+    if(smaller != nullptr) //8
     {
         std::cout << "the smaller one is << " << smaller->name << std::endl;
     }
-     //9
+    else
+    {
+        std::cout << "The pointer in null! " << std::endl;
+    }     //9
     
     U uInst1;
     float updatedValue = 2.f;
