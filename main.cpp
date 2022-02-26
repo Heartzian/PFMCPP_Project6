@@ -56,48 +56,82 @@ Purpose:  This project will show you the difference between member functions and
 #include <string>
 struct T
 {
-    T(<#type name#> v, const char* <#variable name#>)   //1
-    //2
-    //3
+    int value; //2
+    std::string name; //3
+    T(int v, std::string n) : value(v), name(n) {}//1
 };
 
-struct <#structName1#>                                //4
+struct CheckPointer                                //4
 {
-    <#type name#> compare(<#type name#> a, <#type name#> b) //5
+    T* compare(T* a, T* b) //5
     {
-        if( a->value < b->value ) return a;
-        if( a->value > b->value ) return b;
+        if ( ( a != nullptr ) && ( b != nullptr) )
+        {
+            if( a->value < b->value ) return a;
+            if( a->value > b->value ) return b;
+        }
         return nullptr;
     }
 };
 
 struct U
 {
-    float <#name1#> { 0 }, <#name2#> { 0 };
-    <#returnType#> <#memberFunction#>(<#type name#>* <#updatedValue#>)      //12
+    float uVariable1 { 0.0f }, uVariable2 { 0.0f };
+    //float* ptrTouVariable1 = &uVariable1;
+    //float* ptrTouVariable2 = &uVariable2;
+    float updateU(float* updatedValue)      //12
     {
-        
+        if( updatedValue != nullptr)
+        {
+            std::cout << "U's unit1 value: " << this->uVariable1 << std::endl;
+            this->uVariable1 = *updatedValue;
+            std::cout << "U's unit1 updated value: " << this->uVariable1 << std::endl;
+            while( std::abs(this->uVariable2 - this->uVariable1) > 0.001f )
+            {
+                if(this->uVariable2 < this->uVariable1)
+                    this->uVariable2 += 0.1f;
+                else
+                    this->uVariable2 -= 0.1f;
+            }
+            std::cout << "U's unit2 updated value: " << this->uVariable2 << std::endl;
+            return this->uVariable2 * this->uVariable1;
+        }
+        std::cout << "Warning: float updatedValue is nullptr!" << std::endl;
+        return 0.0f;
     }
+    
 };
 
-struct <#structname2#>
+struct multiplyUVariables
 {
-    static <#returntype#> <#staticFunctionA#>(U* that, <#type name#>* <#updatedValue#> )        //10
+    static float multiply(U* uInstance, float* newValue)         //10
     {
-        std::cout << "U's <#name1#> value: " << that-><#name1#> << std::endl;
-        that-><#name1#> = <#updatedValue#>;
-        std::cout << "U's <#name1#> updated value: " << that-><#name1#> << std::endl;
-        while( std::abs(that-><#name2#> - that-><#name1#>) > 0.001f )
+        if(uInstance == nullptr || newValue == nullptr)
         {
-            /*
-             write something that makes the distance between that-><#name2#> and that-><#name1#> get smaller
-             */
-            that-><#name2#> += ;
+            std::cout << "Warning: function arguments are nullptr" << std::endl;
+            return 0.0f;
         }
-        std::cout << "U's <#name2#> updated value: " << that-><#name2#> << std::endl;
-        return that-><#name2#> * that-><#name1#>;
+        std::cout << "U's uVariable1 value: " << uInstance->uVariable1 << std::endl;
+        uInstance->uVariable1 = *newValue;
+        std::cout << "U's uVariable1 updated value: " << uInstance->uVariable1 << std::endl;
+
+        while( std::abs(uInstance->uVariable2 - uInstance->uVariable1) > 0.001f )
+        {
+            if (uInstance->uVariable2 < uInstance->uVariable1)
+            {
+                uInstance->uVariable2 += 0.1f;
+                std::cout << "uVariable2: " << uInstance->uVariable2 << std::endl;
+            }
+            else
+            {
+                uInstance->uVariable2 -= 0.1f;
+                std::cout << "uVariable2: " << uInstance->uVariable2 << std::endl;
+            }
+        }
+        std::cout << "U's uVariable2 updated value: " << uInstance->uVariable2 << std::endl;
+        return uInstance->uVariable2 * uInstance->uVariable1;
     }
-};
+}; 
         
 /*
  MAKE SURE YOU ARE NOT ON THE MASTER BRANCH
@@ -115,17 +149,25 @@ struct <#structname2#>
 
 int main()
 {
-    T <#name1#>( , );                                             //6
-    T <#name2#>( , );                                             //6
+    T tInst1( 1, "T struct instance 1" );               //6
+    T tInst2( 2, "T struct instance 1" );               //6
     
-    <#structName1#> f;                                            //7
-    auto* smaller = f.compare( , );                              //8
-    std::cout << "the smaller one is << " << smaller->name << std::endl; //9
+    CheckPointer f;                                           //7
     
-    U <#name3#>;
-    float updatedValue = 5.f;
-    std::cout << "[static func] <#name3#>'s multiplied values: " << <#structname2#>::<#staticFunctionA#>( , ) << std::endl;                  //11
+    auto* smaller = f.compare( &tInst1, &tInst2); 
+    if(smaller != nullptr) //8
+    {
+        std::cout << "the smaller one is << " << smaller->name << std::endl;
+    }
+    else
+    {
+        std::cout << "The pointer in null! " << std::endl;
+    }     //9
     
-    U <#name4#>;
-    std::cout << "[member func] <#name4#>'s multiplied values: " << <#name4#>.<#memberFunction#>( &updatedValue ) << std::endl;
+    U uInst1;
+    float updatedValue = 2.f;
+    std::cout << "\n[static func] uInst1's multiplied values: " << multiplyUVariables::multiply( &uInst1, &updatedValue ) << std::endl;                  //11
+    
+    U uInst2;
+    std::cout << "\n[member func] uInst2's multiplied values: " << uInst2.updateU( &updatedValue ) << std::endl;
 }
