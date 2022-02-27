@@ -70,9 +70,7 @@ struct U
 struct multiplyUVariables
 {
     static float multiply(U& uInstance, float* newValue)         //10
-    {
-        std::cout << "Warning: function arguments are nullptr" << std::endl;
-            
+    {            
         std::cout << "U's uVariable1 value: " << uInstance.uVariable1 << std::endl;
         uInstance.uVariable1 = *newValue;
         std::cout << "U's uVariable1 updated value: " << uInstance.uVariable1 << std::endl;
@@ -91,7 +89,7 @@ struct multiplyUVariables
             }
         }
         std::cout << "U's uVariable2 updated value: " << uInstance.uVariable2 << std::endl;
-        return 0;
+        return uInstance.uVariable2 * uInstance.uVariable1;
     }
 }; 
         
