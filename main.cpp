@@ -30,19 +30,16 @@ Create a branch named Part2
 struct T
 {
     int value; //2
-    std::string name; //3
-    T(int v, std::string n) : value(v), name(n) {}//1
+    const char* name; //3
+    T(int v, const char* n) : value(v), name(n) {}//1
 };
 
 struct CheckPointer                                //4
 {
-    T* compare(T* a, T* b) //5
+    T* compare(T& a, T& b) //5
     {
-        if ( ( a != nullptr ) && ( b != nullptr) )
-        {
-            if( a->value < b->value ) return a;
-            if( a->value > b->value ) return b;
-        }
+        if( a.value < b.value ) return &a;
+        if( a.value > b.value ) return &b;
         return nullptr;
     }
 };
@@ -52,57 +49,47 @@ struct U
     float uVariable1 { 0.0f }, uVariable2 { 0.0f };
     //float* ptrTouVariable1 = &uVariable1;
     //float* ptrTouVariable2 = &uVariable2;
-    float updateU(float* updatedValue)      //12
+    float updateU(float& updatedValue)      //12
     {
-        if( updatedValue != nullptr)
+        std::cout << "U's unit1 value: " << this->uVariable1 << std::endl;
+        this->uVariable1 = updatedValue;
+        std::cout << "U's unit1 updated value: " << this->uVariable1 << std::endl;
+        while( std::abs(this->uVariable2 - this->uVariable1) > 0.001f )
         {
-            std::cout << "U's unit1 value: " << this->uVariable1 << std::endl;
-            this->uVariable1 = *updatedValue;
-            std::cout << "U's unit1 updated value: " << this->uVariable1 << std::endl;
-            while( std::abs(this->uVariable2 - this->uVariable1) > 0.001f )
-            {
-                if(this->uVariable2 < this->uVariable1)
-                    this->uVariable2 += 0.1f;
-                else
-                    this->uVariable2 -= 0.1f;
-            }
-            std::cout << "U's unit2 updated value: " << this->uVariable2 << std::endl;
-            return this->uVariable2 * this->uVariable1;
+            if(this->uVariable2 < this->uVariable1)
+                this->uVariable2 += 0.1f;
+            else
+                this->uVariable2 -= 0.1f;
         }
-        std::cout << "Warning: float updatedValue is nullptr!" << std::endl;
-        return 0.0f;
+        std::cout << "U's unit2 updated value: " << this->uVariable2 << std::endl;
+        return this->uVariable2 * this->uVariable1;
     }
     
 };
 
 struct multiplyUVariables
 {
-    static float multiply(U* uInstance, float* newValue)         //10
-    {
-        if(uInstance == nullptr || newValue == nullptr)
-        {
-            std::cout << "Warning: function arguments are nullptr" << std::endl;
-            return 0.0f;
-        }
-        std::cout << "U's uVariable1 value: " << uInstance->uVariable1 << std::endl;
-        uInstance->uVariable1 = *newValue;
-        std::cout << "U's uVariable1 updated value: " << uInstance->uVariable1 << std::endl;
+    static float multiply(U& uInstance, float& newValue)         //10
+    {            
+        std::cout << "U's uVariable1 value: " << uInstance.uVariable1 << std::endl;
+        uInstance.uVariable1 = newValue;
+        std::cout << "U's uVariable1 updated value: " << uInstance.uVariable1 << std::endl;
 
-        while( std::abs(uInstance->uVariable2 - uInstance->uVariable1) > 0.001f )
+        while( std::abs(uInstance.uVariable2 - uInstance.uVariable1) > 0.001f )
         {
-            if (uInstance->uVariable2 < uInstance->uVariable1)
+            if (uInstance.uVariable2 < uInstance.uVariable1)
             {
-                uInstance->uVariable2 += 0.1f;
-                std::cout << "uVariable2: " << uInstance->uVariable2 << std::endl;
+                uInstance.uVariable2 += 0.1f;
+                std::cout << "uVariable2: " << uInstance.uVariable2 << std::endl;
             }
             else
             {
-                uInstance->uVariable2 -= 0.1f;
-                std::cout << "uVariable2: " << uInstance->uVariable2 << std::endl;
+                uInstance.uVariable2 -= 0.1f;
+                std::cout << "uVariable2: " << uInstance.uVariable2 << std::endl;
             }
         }
-        std::cout << "U's uVariable2 updated value: " << uInstance->uVariable2 << std::endl;
-        return uInstance->uVariable2 * uInstance->uVariable1;
+        std::cout << "U's uVariable2 updated value: " << uInstance.uVariable2 << std::endl;
+        return uInstance.uVariable2 * uInstance.uVariable1;
     }
 }; 
         
@@ -127,7 +114,7 @@ int main()
     
     CheckPointer f;                                           //7
     
-    auto* smaller = f.compare( &tInst1, &tInst2); 
+    auto* smaller = f.compare( tInst1, tInst2); 
     if(smaller != nullptr) //8
     {
         std::cout << "the smaller one is << " << smaller->name << std::endl;
@@ -139,8 +126,8 @@ int main()
     
     U uInst1;
     float updatedValue = 2.f;
-    std::cout << "\n[static func] uInst1's multiplied values: " << multiplyUVariables::multiply( &uInst1, &updatedValue ) << std::endl;                  //11
+    std::cout << "\n[static func] uInst1's multiplied values: " << multiplyUVariables::multiply( uInst1, updatedValue ) << std::endl;                  //11
     
     U uInst2;
-    std::cout << "\n[member func] uInst2's multiplied values: " << uInst2.updateU( &updatedValue ) << std::endl;
+    std::cout << "\n[member func] uInst2's multiplied values: " << uInst2.updateU( updatedValue ) << std::endl;
 }
