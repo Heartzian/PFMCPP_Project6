@@ -69,10 +69,10 @@ struct U
 
 struct multiplyUVariables
 {
-    static float multiply(U& uInstance, float* newValue)         //10
+    static float multiply(U& uInstance, float& newValue)         //10
     {            
         std::cout << "U's uVariable1 value: " << uInstance.uVariable1 << std::endl;
-        uInstance.uVariable1 = *newValue;
+        uInstance.uVariable1 = newValue;
         std::cout << "U's uVariable1 updated value: " << uInstance.uVariable1 << std::endl;
 
         while( std::abs(uInstance.uVariable2 - uInstance.uVariable1) > 0.001f )
@@ -126,7 +126,7 @@ int main()
     
     U uInst1;
     float updatedValue = 2.f;
-    std::cout << "\n[static func] uInst1's multiplied values: " << multiplyUVariables::multiply( uInst1, &updatedValue ) << std::endl;                  //11
+    std::cout << "\n[static func] uInst1's multiplied values: " << multiplyUVariables::multiply( uInst1, updatedValue ) << std::endl;                  //11
     
     U uInst2;
     std::cout << "\n[member func] uInst2's multiplied values: " << uInst2.updateU( updatedValue ) << std::endl;
